@@ -1,171 +1,123 @@
---[[
+-- If you experience any errors while trying to install kickstart, run `:checkhealth` for more info.
 
-=====================================================================
-==================== READ THIS BEFORE CONTINUING ====================
-=====================================================================
-========                                    .-----.          ========
-========         .----------------------.   | === |          ========
-========         |.-""""""""""""""""""-.|   |-----|          ========
-========         ||                    ||   | === |          ========
-========         ||   KICKSTART.NVIM   ||   |-----|          ========
-========         ||                    ||   | === |          ========
-========         ||                    ||   |-----|          ========
-========         ||:Tutor              ||   |:::::|          ========
-========         |'-..................-'|   |____o|          ========
-========         `"")----------------(""`   ___________      ========
-========        /::::::::::|  |::::::::::\  \ no mouse \     ========
-========       /:::========|  |==hjkl==:::\  \ required \    ========
-========      '""""""""""""'  '""""""""""""'  '""""""""""'   ========
-========                                                     ========
-=====================================================================
-=====================================================================
+-- ----------------------------
+-- Neovide configuration
+-- ----------------------------
+if vim.g.neovide == true then
+  vim.g.neovide_position_animation_length = 0
+  vim.g.neovide_cursor_animation_length = 0.0
+  vim.g.neovide_cursor_trail_size = 0
+  vim.g.neovide_cursor_animate_in_insert_mode = false
+  vim.g.neovide_cursor_animate_command_line = false
+  vim.g.neovide_scroll_animation_far_lines = 1
+  vim.g.neovide_scroll_animation_length = 0.15
+  vim.g.neovide_window_blurred = true
+  vim.g.neovide_opacity = 0.8
+  vim.g.neovide_normal_opacity = 0.9
 
-What is Kickstart?
+  vim.g.neovide_refresh_rate = 60
+  vim.g.neovide_refresh_rate_idle = 5
+  vim.g.neovide_cursor_short_animation_length = 0.0
 
-  Kickstart.nvim is *not* a distribution.
+  vim.g.neovide_cursor_smooth_blink = true
 
-  Kickstart.nvim is a starting point for your own configuration.
-    The goal is that you can read every line of code, top-to-bottom, understand
-    what your configuration is doing, and modify it to suit your needs.
+  vim.keymap.set({ 'n', 'v' }, '<F11>', ':let g:neovide_fullscreen = !g:neovide_fullscreen<CR>')
+  vim.keymap.set({ 'n', 'v' }, '<C-+>', ':lua vim.g.neovide_scale_factor = vim.g.neovide_scale_factor + 0.1<CR>')
+  vim.keymap.set({ 'n', 'v' }, '<C-=>', ':lua vim.g.neovide_scale_factor = vim.g.neovide_scale_factor - 0.1<CR>')
+  vim.keymap.set({ 'n', 'v' }, '<C-ScrollWheelUp>', ':lua vim.g.neovide_scale_factor = vim.g.neovide_scale_factor + 0.1<CR>')
+  vim.keymap.set({ 'n', 'v' }, '<C-ScrollWheelDown>', ':lua vim.g.neovide_scale_factor = vim.g.neovide_scale_factor - 0.1<CR>')
+end
 
-    Once you've done that, you can start exploring, configuring and tinkering to
-    make Neovim your own! That might mean leaving Kickstart just the way it is for a while
-    or immediately breaking it into modular pieces. It's up to you!
+-- ----------------------------------------------------------------
+-- Options
+-- ----------------------------------------------------------------
 
-    If you don't know anything about Lua, I recommend taking some time to read through
-    a guide. One possible example which will only take 10-15 minutes:
-      - https://learnxinyminutes.com/docs/lua/
+-- So that file watches would not freak out about deleted files
+vim.cmd [[set backupcopy=yes]]
+vim.schedule(function() vim.o.clipboard = 'unnamedplus' end) -- Share system clipboard
+vim.g.mapleader = ' '
+vim.g.maplocalleader = ' '
+vim.opt.completeopt = { 'menuone', 'noselect', 'popup', 'fuzzy', 'preview' }
+vim.opt.pumheight = 10
+vim.o.tabstop = 4
+vim.o.shiftwidth = 4
+vim.o.expandtab = true -- Use spaces instead of tabs
+vim.o.autoindent = true -- Copy indent from previous line
+vim.o.smartindent = true -- Attempt to indent based on { and } pairs, etc.
+vim.o.number = true -- Show line numbers
+vim.o.showmode = false -- Don't show INSERT / VISUAL / etc.
+vim.o.breakindent = true -- Indent broken lines
+vim.o.undofile = true -- Save undo history
+vim.o.undolevels = 10000 -- More undo levels
+vim.o.ignorecase = true -- Ignore case unless \C
+vim.o.smartcase = true -- Ignore case unless any capital letter
+vim.o.signcolumn = 'yes' -- Always draw sign column
+vim.o.swapfile = false
+vim.o.updatetime = 250 -- Milliseconds of idle before swap write (and CursorHold)
+vim.o.timeoutlen = 300 -- Milliseconds to wait for mapped sequence
+vim.o.splitright = true -- :vsplit puts new window on right
+vim.o.splitbelow = true -- :split puts new window below
+vim.o.list = true -- Display whitespace
+vim.opt.listchars = {
+  tab = '» ',
+  trail = '·',
+  multispace = '·',
+  nbsp = '␣',
+}
+vim.o.inccommand = 'split' -- Preview substitutions live
+vim.o.incsearch = true -- Show results as you type
+vim.o.cursorline = true -- Show on which line the cursor is on
+vim.o.scrolloff = 999 -- Keep cursor centered vertically
+vim.o.confirm = true -- Confirm to save on close if there are changes
+vim.o.winborder = 'rounded' -- Add border around floating windows
+vim.o.conceallevel = 0 -- Don't hide stuff from me
+vim.opt.grepprg = 'rg --vimgrep --hidden --smart-case'
+vim.opt.grepformat = '%f:%l:%c:%m'
+vim.g.backup = false
+vim.g.writebackup = false
+vim.opt.linespace = 2 -- Vertical line space
 
-    After understanding a bit more about Lua, you can use `:help lua-guide` as a
-    reference for how Neovim integrates Lua.
-    - :help lua-guide
-    - (or HTML version): https://neovim.io/doc/user/lua-guide.html
-
-Kickstart Guide:
-
-  TODO: The very first thing you should do is to run the command `:Tutor` in Neovim.
-
-    If you don't know what this means, type the following:
-      - <escape key>
-      - :
-      - Tutor
-      - <enter key>
-
-    (If you already know the Neovim basics, you can skip this step.)
-
-  Once you've completed that, you can continue working through **AND READING** the rest
-  of the kickstart init.lua.
-
-  Next, run AND READ `:help`.
-    This will open up a help window with some basic information
-    about reading, navigating and searching the builtin help documentation.
-
-    This should be the first place you go to look when you're stuck or confused
-    with something. It's one of my favorite Neovim features.
-
-    MOST IMPORTANTLY, we provide a keymap "<space>sh" to [s]earch the [h]elp documentation,
-    which is very useful when you're not exactly sure of what you're looking for.
-
-  I have left several `:help X` comments throughout the init.lua
-    These are hints about where to find more information about the relevant settings,
-    plugins or Neovim features used in Kickstart.
-
-   NOTE: Look for lines like this
-
-    Throughout the file. These are for you, the reader, to help you understand what is happening.
-    Feel free to delete them once you know what you're doing, but they should serve as a guide
-    for when you are first encountering a few different constructs in your Neovim config.
-
-If you experience any errors while trying to install kickstart, run `:checkhealth` for more info.
-
-I hope you enjoy your Neovim journey,
-- TJ
-
-P.S. You can delete this when you're done too. It's your config now! :)
---]]
-
--- Set <space> as the leader key
--- See `:help mapleader`
---  NOTE: Must happen before plugins are loaded (otherwise wrong leader will be used)
-vim.g.mapleader = '~'
-vim.g.maplocalleader = '~'
-
--- Set to true if you have a Nerd Font installed and selected in the terminal
-vim.g.have_nerd_font = false
-
--- [[ Setting options ]]
--- See `:help vim.o`
--- NOTE: You can change these options as you wish!
---  For more options, you can see `:help option-list`
-
--- Make line numbers default
-vim.o.number = true
--- You can also add relative line numbers, to help with jumping.
---  Experiment for yourself to see if you like it!
--- vim.o.relativenumber = true
-
--- Enable mouse mode, can be useful for resizing splits for example!
+vim.g.have_nerd_font = false -- Set to true if you have a Nerd Font installed and selected in the terminal
+vim.o.relativenumber = true
 vim.o.mouse = 'a'
 
--- Don't show the mode, since it's already in the status line
-vim.o.showmode = false
+-- ----------------------------------------------------------------
+-- Colorscheme
+-- ----------------------------------------------------------------
+vim.api.nvim_create_autocmd('ColorScheme', {
+  pattern = 'habamax',
+  callback = function()
+    vim.opt.termguicolors = true
+    vim.api.nvim_set_hl(0, 'Normal', { fg = '#c0c0c0', bg = '#000000' }) -- Background black, text whitish
+    vim.api.nvim_set_hl(0, 'TabLineFill', { bg = '#000000' }) -- Filler area
+    vim.api.nvim_set_hl(0, 'TabLine', { fg = '#9a9a9a', bg = '#0d0d0d' }) -- Inactive tabs
+    vim.api.nvim_set_hl(0, 'TabLineSel', { fg = '#ffffff', bg = '#1a1a1a', bold = true }) -- Active tab
+    vim.api.nvim_set_hl(0, 'WinSeparator', { fg = '#1a1a1a', bg = '#000000' }) -- Window separator (nvim 0.7+)
+    vim.api.nvim_set_hl(0, 'VertSplit', { fg = '#1a1a1a', bg = '#000000' }) -- Window separator (older nvim)
+    vim.api.nvim_set_hl(0, 'StatusLine', { fg = '#9a9a9a', bg = '#000000' }) -- Active window status line
+    vim.api.nvim_set_hl(0, 'StatusLineNC', { fg = '#6f6f6f', bg = '#000000' }) -- Inactive window status line
+    vim.api.nvim_set_hl(0, 'Search', { fg = '#eaeaea', bg = '#2a2a2a' })
+    vim.api.nvim_set_hl(0, 'CurSearch', { fg = '#000000', bg = '#b0b0b0', bold = true })
+    vim.api.nvim_set_hl(0, 'IncSearch', { fg = '#000000', bg = '#b0b0b0', bold = true })
+    vim.api.nvim_set_hl(0, 'Visual', { bg = '#3a3a3a' })
+    vim.api.nvim_set_hl(0, 'VisualNOS', { bg = '#3a3a3a' })
+    vim.api.nvim_set_hl(0, 'QuickFixLine', { link = 'Visual' })
+    vim.api.nvim_set_hl(0, 'NormalFloat', { bg = '#000000' })
+    vim.api.nvim_set_hl(0, 'FloatBorder', { bg = '#000000' })
 
--- Sync clipboard between OS and Neovim.
---  Schedule the setting after `UiEnter` because it can increase startup-time.
---  Remove this option if you want your OS clipboard to remain independent.
---  See `:help 'clipboard'`
-vim.schedule(function() vim.o.clipboard = 'unnamedplus' end)
+    vim.api.nvim_set_hl(0, 'MiniPickNormal', { fg = '#b8b8b8', bg = '#000000' })
+    vim.api.nvim_set_hl(0, 'MiniPickMatchRanges', { fg = '#ffffff', bold = true })
+    vim.api.nvim_set_hl(0, 'MiniPickBorder', { bg = '#000000' })
+    vim.api.nvim_set_hl(0, 'MiniPickBorderText', { bg = '#000000' })
+    vim.api.nvim_set_hl(0, 'MiniPickPrompt', { bg = '#000000' })
+    vim.api.nvim_set_hl(0, 'MiniPickPromptPrefix', { bg = '#000000' })
+  end,
+})
+vim.cmd.colorscheme 'habamax'
 
--- Enable break indent
-vim.o.breakindent = true
-
--- Save undo history
-vim.o.undofile = true
-
--- Case-insensitive searching UNLESS \C or one or more capital letters in the search term
-vim.o.ignorecase = true
-vim.o.smartcase = true
-
--- Keep signcolumn on by default
-vim.o.signcolumn = 'yes'
-
--- Decrease update time
-vim.o.updatetime = 250
-
--- Decrease mapped sequence wait time
-vim.o.timeoutlen = 300
-
--- Configure how new splits should be opened
-vim.o.splitright = true
-vim.o.splitbelow = true
-
--- Sets how neovim will display certain whitespace characters in the editor.
---  See `:help 'list'`
---  and `:help 'listchars'`
---
---  Notice listchars is set using `vim.opt` instead of `vim.o`.
---  It is very similar to `vim.o` but offers an interface for conveniently interacting with tables.
---   See `:help lua-options`
---   and `:help lua-guide-options`
-vim.o.list = true
-vim.opt.listchars = { tab = '» ', trail = '·', nbsp = '␣' }
-
--- Preview substitutions live, as you type!
-vim.o.inccommand = 'split'
-
--- Show which line your cursor is on
-vim.o.cursorline = true
-
--- Minimal number of screen lines to keep above and below the cursor.
-vim.o.scrolloff = 5
-
--- if performing an operation that would fail due to unsaved changes in the buffer (like `:q`),
--- instead raise a dialog asking if you wish to save the current file(s)
--- See `:help 'confirm'`
-vim.o.confirm = true
-
--- [[ Basic Keymaps ]]
---  See `:help vim.keymap.set()`
+-- --------------------------------------
+-- Keymaps
+-- --------------------------------------
 
 -- Clear highlights on search when pressing <Esc> in normal mode
 --  See `:help hlsearch`
@@ -181,7 +133,7 @@ vim.diagnostic.config {
 
   -- Can switch between these as you prefer
   virtual_text = true, -- Text shows up at the end of the line
-  virtual_lines = false, -- Teest shows up underneath the line, with virtual lines
+  virtual_lines = false, -- Test shows up underneath the line, with virtual lines
 
   -- Auto open the float, so you can easily read the errors when jumping with `[d` and `]d`
   jump = { float = true },
@@ -846,16 +798,6 @@ require('lazy').setup({
       -- Simple and easy statusline.
       --  You could remove this setup call if you don't like it,
       --  and try some other statusline plugin
-      local statusline = require 'mini.statusline'
-      -- set use_icons to true if you have a Nerd Font
-      statusline.setup { use_icons = vim.g.have_nerd_font }
-
-      -- You can configure sections in the statusline by overriding their
-      -- default behavior. For example, here we set the section for
-      -- cursor location to LINE:COLUMN
-      ---@diagnostic disable-next-line: duplicate-set-field
-      statusline.section_location = function() return '%2l:%-2v' end
-
       -- ... and there is more!
       --  Check out: https://github.com/nvim-mini/mini.nvim
     end,
